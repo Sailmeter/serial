@@ -1,6 +1,5 @@
 var serialPort = require("serialport");
-var lazy = require("lazy");
-var byline = require('byline');
+var LineByLineReader = require('line-by-line');
 var fs  = require("fs");
 
 var utils = require("./utils.js");
@@ -13,7 +12,7 @@ if (process.argv.length != 3) {
 var filename = process.argv[2];
 
 var SerialPort = require("serialport").SerialPort
-var serialPort = new SerialPort("/dev/ttyS0", {
+var serialPort = new SerialPort("/dev/ttyUSB1", {
   baudrate: 4800,
   parser: serialPort.parsers.readline("\n")
 }, false); // this is the openImmediately flag [default is true]
@@ -31,21 +30,26 @@ serialPort.open(function (error) {
 });
 
 function writeFileToPort(cb) {
-    var stream = fs.createReadStream(filename);
-    stream = byline.createStream(stream);
+    var stream = new LineByLineReader(filename);
     stream.on('end', function() {
       serialPort.drain(cb);
-    })
-    stream.on('data', function(line) {
+    });
+    stream.on('error', function(err) {
+      console.log(err);
+    });
+    stream.on('line', function(line) {
       stream.pause();
       serialPort.write(line.toString() + "\n", function(err, results) {
         console.log(line.toString());
         if (err) {
           console.log('failed to write: ' + err);
         }
-        var timer = setInterval(function() {
-          stream.resume();
-        }, 1000);
+        serialPort.drain(function() {
+          var timer = setTimeout(function() {
+            stream.resume();
+          }, 1000);
+        });
       });
     });
 }
+
