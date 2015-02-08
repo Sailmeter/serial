@@ -4,15 +4,16 @@ var fs  = require("fs");
 
 var utils = require("./utils.js");
 
-if (process.argv.length != 3) {
-   console.log(process.argv[0] + " " + process.argv[1] + " <filename>");
+if (process.argv.length != 4) {
+   console.log(process.argv[0] + " " + process.argv[1] + " <usb port> <filename>");
    process.exit(1);
 }
 
-var filename = process.argv[2];
+var usbport = process.argv[2];
+var filename = process.argv[3];
 
 var SerialPort = require("serialport").SerialPort
-var serialPort = new SerialPort("/dev/ttyUSB1", {
+var serialPort = new SerialPort(usbport, {
   baudrate: 4800,
   parser: serialPort.parsers.readline("\n")
 }, false); // this is the openImmediately flag [default is true]
