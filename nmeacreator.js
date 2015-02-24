@@ -13,7 +13,7 @@ while (1) {
   direction = utils.getRandomArbitrary(220, 240);
   speed = utils.getRandomArbitrary(2, 5);
 
-  sentenance = "$IIVHW," + direction.toFixed(2) + ",M," + (direction-20).toFixed(2) + ",T," + speed.toFixed(2) + "," + (speed*1.852).toFixed(2);
+  sentenance = "$VWVHW," + direction.toFixed(2) + ",M," + (direction-20).toFixed(2) + ",T," + speed.toFixed(2) + "," + (speed*1.852).toFixed(2);
   var checksum = utils.computeChecksum(sentenance);
   console.log(sentenance + checksum + "\r");   
 }
